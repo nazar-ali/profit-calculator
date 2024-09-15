@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Typography, Box, Tabs, Tab, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditInputField from '../src/components/EditInputField.jsx';
 import ProjectSection from './components/ProjectSection';
 import { useGlobalContext } from './context/index.jsx';
+import Total from "../src/components/Total.jsx"
 
 const App = () => {
   const { 
@@ -12,7 +13,11 @@ const App = () => {
     activeTab,
     setActiveTab
   } = useGlobalContext();
-console.log(projects)
+
+  const [totalCost,setTotalCost] = useState()
+  const [ totalIncome, setTotalIncome] = useState()
+  const [ totalProfit, setTotalProfit] = useState()
+
   const handleAddProject = () => {
     const newTab = {
       id: projects.length + 1,
@@ -144,6 +149,10 @@ console.log(projects)
               />
             </div>
           )}
+        {/* <div>
+
+        <Total/>
+        </div> */}
         </Box>
       </div>
     </>

@@ -26,7 +26,7 @@ const ExpenseCard = ({ expense, onChange }) => {
     let errorMsg = '';
     if (field === 'name') {
       if (!value || !isNaN(value)) {
-        errorMsg = 'Name must be a string and cannot be empty.';
+        errorMsg = 'This field is required';
       }
     } else if (field === 'amount') {
       if (isNaN(value) || value < 0) {

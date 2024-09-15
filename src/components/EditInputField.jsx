@@ -24,13 +24,13 @@ const EditInputField = ({ label, value, onSave, onCancel }) => {
 
   const handleEditButton = () => {
     setIsEditing(true);
-    setInputValue(value);  // Initialize input with the current value
+    setInputValue(value);  
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setInputValue(value);  // Reset input to the original value
-    setError(false);  // Reset error state on cancel
+    setInputValue(value);  
+    setError(false);  
     onCancel();
   };
 
@@ -48,10 +48,10 @@ const EditInputField = ({ label, value, onSave, onCancel }) => {
                 if (e.key === 'Enter') handleSave();
                 if (e.key === 'Escape') handleCancel();
               }}
-              autoFocus
+              
               size="small"
               error={error}  // Show red border if there's an error
-              helperText={error ? 'Field cannot be empty' : ''}  // Error message below the input
+              helperText={error ? 'This field is required' : ''}  // Error message below the input
             />
             <IconButton onClick={handleSave} size="small">
               <CheckIcon fontSize="small" />
@@ -68,13 +68,6 @@ const EditInputField = ({ label, value, onSave, onCancel }) => {
           </>
         )}
       </div>
-
-      {/* Error message popup if input is empty */}
-      {error && (
-        <Typography variant="caption" color="error" style={{ marginTop: '4px' }}>
-          Error: Field cannot be empty!
-        </Typography>
-      )}
     </Box>
   );
 };
