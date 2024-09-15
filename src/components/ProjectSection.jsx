@@ -8,7 +8,6 @@ const ProjectSection = ({ project, onAddItem, onRemoveExpense, onChangeExpense }
   console.log(project.expenses);
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      {/* Expenses Section */}
       <div style={{ flex: 1, position: 'relative', marginRight: '10px' }}>
         <Typography variant="h6">Expenses</Typography>
         {project.expenses.map((expense) => (
@@ -28,7 +27,6 @@ const ProjectSection = ({ project, onAddItem, onRemoveExpense, onChangeExpense }
         </IconButton>
       </div>
 
-      {/* Income Section */}
       <div style={{ flex: 1, position: 'relative', marginLeft: '10px' }}>
         <Typography variant="h6">Income</Typography>
         {project.incomes.map((income) => (

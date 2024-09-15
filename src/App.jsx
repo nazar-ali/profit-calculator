@@ -17,8 +17,8 @@ console.log(projects)
     const newTab = {
       id: projects.length + 1,
       name: `Project ${projects.length + 1}`,
-      expenses: [{ id: 1, name: '', amount: 0 }],
-      incomes: [{ id: 1, name: '', amount: 0 }],
+      expenses: [],
+      incomes: [],
     };
     setProjects([...projects, newTab]);
     setActiveTab(projects.length);
@@ -41,7 +41,7 @@ console.log(projects)
   };
 
   const handleDeleteTab = (id) => {
-    if (projects.length > 1) {
+    if (projects.length > 0) {
       const newProjects = projects.filter(project => project.id !== id);
       setProjects(newProjects);
       setActiveTab(prev => (prev >= newProjects.length ? newProjects.length - 1 : prev));

@@ -7,13 +7,32 @@ const IncomeCard = ({ income, onChange }) => {
   const [fields, setFields] = useState([{ id: income.id, name: '', amount: 0 }]);
   const [isEditing, setIsEditing] = useState({});
   const [originalTitle, setOriginalTitle] = useState("Income 1"); // Store original title
+  const [errors, setErrors] = useState({});
 
   const handleChange = (id, e) => {
+    const { name, value } = e.target;
     const updatedFields = fields.map(field =>
-      field.id === id ? { ...field, [e.target.name]: e.target.value } : field
+      field.id === id ? { ...field, [name]: value } : field
     );
     setFields(updatedFields);
-    onChange(income.id, e.target.name, e.target.value);
+    onChange(income.id, name, value);
+
+    // Validation
+    validateField(id, name, value);
+  };
+
+  const validateField = (id, field, value) => {
+    let errorMsg = '';
+    if (field === 'name') {
+      if (!value || !isNaN(value)) {
+        errorMsg = 'Name must be a string and cannot be empty.';
+      }
+    } else if (field === 'amount') {
+      if (isNaN(value) || value < 0) {
+        errorMsg = 'Amount must be a positive number.';
+      }
+    }
+    setErrors(prevErrors => ({ ...prevErrors, [`${id}-${field}`]: errorMsg }));
   };
 
   const handleAddField = () => {
@@ -44,25 +63,24 @@ const IncomeCard = ({ income, onChange }) => {
   return (
     <Card style={{ backgroundColor: '#c0f4c3', marginBottom: '10px' }}>
       <CardContent>
-        <div style={{display:"flex"}}>
-
-        <EditInputField
-          value={originalTitle} // Use originalTitle to display the current title
-          label="Income Title"
-          onSave={handleSaveTitle}
-          onCancel={handleCancelTitle}
+        <div style={{ display: "flex" }}>
+          <EditInputField
+            value={originalTitle} // Use originalTitle to display the current title
+            label="Income Title"
+            onSave={handleSaveTitle}
+            onCancel={handleCancelTitle}
           />
-        <IconButton
-          onClick={(e) => {
-            e.stopPropagation();
-            handleCancelTitle(income.id);
-          }}
-          size="small"
-          style={{ marginLeft: '8px',}}
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCancelTitle(income.id);
+            }}
+            size="small"
+            style={{ marginLeft: '8px' }}
           >
-          <CloseIcon fontSize="small" />
-        </IconButton>
-          </div>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </div>
         {fields.map((field) => (
           <div key={field.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
             {
@@ -76,6 +94,8 @@ const IncomeCard = ({ income, onChange }) => {
                         name="name"
                         value={field.name}
                         onChange={(e) => handleChange(field.id, e)}
+                        error={Boolean(errors[`${field.id}-name`])}
+                        helperText={errors[`${field.id}-name`]}
                         style={{ flex: 2, marginRight: '8px' }}
                       />
                       <TextField
@@ -86,6 +106,8 @@ const IncomeCard = ({ income, onChange }) => {
                         type="number"
                         value={field.amount}
                         onChange={(e) => handleChange(field.id, e)}
+                        error={Boolean(errors[`${field.id}-amount`])}
+                        helperText={errors[`${field.id}-amount`]}
                         style={{ flex: 2, marginRight: '8px' }}
                       />
                       <Button
@@ -100,7 +122,7 @@ const IncomeCard = ({ income, onChange }) => {
                   ) : (
                     // Display Mode
                     <>
-                      <Typography style={{ flex: 2, marginRight: '8px' }}>{field.name || `Expense ${field.id}`}</Typography>
+                      <Typography style={{ flex: 2, marginRight: '8px' }}>{field.name || `Income ${field.id}`}</Typography>
                       <Typography style={{ flex: 2, marginRight: '8px' }}>{field.amount || `Amount`}</Typography>
                       <Button
                         variant="contained"
@@ -110,7 +132,6 @@ const IncomeCard = ({ income, onChange }) => {
                       >
                         Edit
                       </Button>
-
                     </>
                   )}
                   <Button
@@ -135,6 +156,7 @@ const IncomeCard = ({ income, onChange }) => {
                     variant="contained"
                     color="error"
                     style={{ marginRight: '4px' }}
+                    disabled
                   >
                     -
                   </Button>

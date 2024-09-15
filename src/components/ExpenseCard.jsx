@@ -6,14 +6,34 @@ import CloseIcon from '@mui/icons-material/Close';
 const ExpenseCard = ({ expense, onChange }) => {
   const [fields, setFields] = useState([{ id: expense.id, name: '', amount: 0 }]);
   const [isEditing, setIsEditing] = useState({});
-  const [originalTitle, setOriginalTitle] = useState("Expense 1"); // Store original title
+  const [originalTitle, setOriginalTitle] = useState("Expense 1");
+  const [errors, setErrors] = useState({});
 
   const handleChange = (id, e) => {
+    const { name, value } = e.target;
     const updatedFields = fields.map(field =>
-      field.id === id ? { ...field, [e.target.name]: e.target.value } : field
+      field.id === id ? { ...field, [name]: value } : field
     );
     setFields(updatedFields);
-    onChange(expense.id, e.target.name, e.target.value);
+
+    // Validation
+    validateField(id, name, value);
+
+    onChange(expense.id, name, value);
+  };
+
+  const validateField = (id, field, value) => {
+    let errorMsg = '';
+    if (field === 'name') {
+      if (!value || !isNaN(value)) {
+        errorMsg = 'Name must be a string and cannot be empty.';
+      }
+    } else if (field === 'amount') {
+      if (isNaN(value) || value < 0) {
+        errorMsg = 'Amount must be a positive number.';
+      }
+    }
+    setErrors(prevErrors => ({ ...prevErrors, [`${id}-${field}`]: errorMsg }));
   };
 
   const handleAddField = () => {
@@ -56,14 +76,13 @@ const ExpenseCard = ({ expense, onChange }) => {
               handleCancelTitle(expense.id);
             }}
             size="small"
-            style={{ marginLeft: '8px', }}
+            style={{ marginLeft: '8px' }}
           >
             <CloseIcon fontSize="small" />
           </IconButton>
         </div>
         {fields.map((field) => (
           <div key={field.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-
             {
               field.id !== expense.id ? (
                 <>
@@ -75,6 +94,8 @@ const ExpenseCard = ({ expense, onChange }) => {
                         name="name"
                         value={field.name}
                         onChange={(e) => handleChange(field.id, e)}
+                        error={Boolean(errors[`${field.id}-name`])}
+                        helperText={errors[`${field.id}-name`]}
                         style={{ flex: 2, marginRight: '8px' }}
                       />
                       <TextField
@@ -85,6 +106,8 @@ const ExpenseCard = ({ expense, onChange }) => {
                         type="number"
                         value={field.amount}
                         onChange={(e) => handleChange(field.id, e)}
+                        error={Boolean(errors[`${field.id}-amount`])}
+                        helperText={errors[`${field.id}-amount`]}
                         style={{ flex: 2, marginRight: '8px' }}
                       />
                       <Button
@@ -99,7 +122,7 @@ const ExpenseCard = ({ expense, onChange }) => {
                   ) : (
                     // Display Mode
                     <>
-                      <Typography style={{ flex: 2, marginRight: '8px' }}>{field.name || `Expense ${field.id}`}</Typography>
+                      <Typography style={{ flex: 2, marginRight: '8px' }}>{`Expense ${field.id}`}</Typography>
                       <Typography style={{ flex: 2, marginRight: '8px' }}>{field.amount || `Amount`}</Typography>
                       <Button
                         variant="contained"
@@ -109,7 +132,6 @@ const ExpenseCard = ({ expense, onChange }) => {
                       >
                         Edit
                       </Button>
-
                     </>
                   )}
                   <Button
@@ -134,6 +156,7 @@ const ExpenseCard = ({ expense, onChange }) => {
                     variant="contained"
                     color="error"
                     style={{ marginRight: '4px' }}
+                    disabled
                   >
                     -
                   </Button>
@@ -155,4 +178,3 @@ const ExpenseCard = ({ expense, onChange }) => {
 };
 
 export default ExpenseCard;
-
