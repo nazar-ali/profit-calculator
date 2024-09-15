@@ -15,10 +15,7 @@ const ExpenseCard = ({ expense, onChange }) => {
       field.id === id ? { ...field, [name]: value } : field
     );
     setFields(updatedFields);
-
-    // Validation
     validateField(id, name, value);
-
     onChange(expense.id, name, value);
   };
 
@@ -29,8 +26,8 @@ const ExpenseCard = ({ expense, onChange }) => {
         errorMsg = 'This field is required';
       }
     } else if (field === 'amount') {
-      if (isNaN(value) || value < 0) {
-        errorMsg = 'Amount must be a positive number.';
+      if (isNaN(value) || value < 0 || value === '') {
+        errorMsg = 'Amount must be a positive number ';
       }
     }
     setErrors(prevErrors => ({ ...prevErrors, [`${id}-${field}`]: errorMsg }));
@@ -48,6 +45,20 @@ const ExpenseCard = ({ expense, onChange }) => {
 
   const toggleEditField = (id) => {
     setIsEditing(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleSave = (id) => {
+    const field = fields.find(f => f.id === id);
+    const { name, amount } = field;
+
+    // Perform validation before saving
+    validateField(id, 'name', name);
+    validateField(id, 'amount', amount);
+
+    if (!errors[`${id}-name`] && !errors[`${id}-amount`]) {
+      toggleEditField(id);  // Exit edit mode after successful save
+      console.log(`Saved field ${id}:`, field);  // Log or process the saved data
+    }
   };
 
   const handleSaveTitle = (newTitle) => {
@@ -95,7 +106,7 @@ const ExpenseCard = ({ expense, onChange }) => {
                         value={field.name}
                         onChange={(e) => handleChange(field.id, e)}
                         error={Boolean(errors[`${field.id}-name`])}
-                        helperText={errors[`${field.id}-name`]}
+                        helperText={errors[`${field.id}-name`] || 'This field is required'}
                         style={{ flex: 2, marginRight: '8px' }}
                       />
                       <TextField
@@ -107,13 +118,13 @@ const ExpenseCard = ({ expense, onChange }) => {
                         value={field.amount}
                         onChange={(e) => handleChange(field.id, e)}
                         error={Boolean(errors[`${field.id}-amount`])}
-                        helperText={errors[`${field.id}-amount`]}
+                        helperText={errors[`${field.id}-amount`] || 'This field is required'}
                         style={{ flex: 2, marginRight: '8px' }}
                       />
                       <Button
                         variant="contained"
                         color="default"
-                        onClick={() => toggleEditField(field.id)}
+                        onClick={() => handleSave(field.id)}  // Save when clicked
                         style={{ margin: '0 4px' }}
                       >
                         Save
